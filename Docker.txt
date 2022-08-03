@@ -1,0 +1,107 @@
+Docker é um exemplo de tecnologia de virtualização, mas não é baseado em máquinas virtuais.
+É uma engine de administração de containers, processos segregados do sistema que rodam aplicações isoladamente.
+Container - processo + sistema de arquivos -> com compartilhamento de recursos com a máquina host
+Baseado em LXC - Linux Containers
+O container usa o kernel da máquina host
+Containers não executam sem uma imagem base
+Docker é open source e escrito em GO (GO foi criado pelo Google)
+Virtualização baseada em software (Sistema operacional)
+Empacota software com vários níveis de isolamento
+Boas práticas recomendam um container para cada serviço
+Docker reduz a complexidade de setup de aplicações
+Docker proporciona maior velocidade na configuração do ambiente de desenvolvimento
+Docker CE / EE - Community Edition e Enterprise Edition
+Imagem é um conjunto de instruções sobre o que o containe deve executar
+Imagens são encontradas no repositório do Docker (DockerHub)
+DockerHub - https://hub.docker.com/
+Container é uma aplicação com propósito definido, não possui OS e tem tamanho reduzido. É o conjunto entre processo e sistema de arquivos. (menor quantidade de recursos para inicialização)
+um Virtual Machine (VM) tem sistema operacional próprio, necessita de um grande espaço de armazenamento e pode executar diversas coisas ao mesmo tempo. (necessitam de mais recurso)
+Containers docker originalmente não possuem conexão com nada fora deles
+Containers:
+	 - segregação de processos no mesmo kernel da maquina host, mas de maneira isolada
+	 - Sistema de arquivos criados a partir de uma imagem (específico por processo) e isolado da maquina host
+	 - Ambientes leves e portáteis onde aplicações são executadas
+	 - Encapsula os binários e bibliotecas necessárias para a execução dos apps
+	 - Boas práticas indicam um container por objetivo (um pra db, outro pra aplicação)
+	 - Baixa necessidade de recursos para a inicialização
+	 - Escalabilidade independente (cada serviço consome recursos da maquina de uma maneira)
+	 - Subprocessos podem ser criados
+	 - Associado ao processo
+
+Imagens:
+	- Modelo de sistema de arquivo somente leitura usado parar criar containers
+	- Criadas a partir do build
+	- Armazenadas em repositórios no Registry
+	- Compostas por uma ou mais camadas
+	- Cada camada é chamada de imagem intermediária
+	- Desaconselhado o uso de commits, não é uma boa prática. Usar o Dockerfile
+	- Dockerhub - Reposítório online oficial
+	- Uma camada representa uma ou mais mudanças no sistema de arquivos
+	- Apenas a última camada pode ser alterada quando o container for iniciado
+	- AUFS - Advaced multi-layered unification filesystem
+	- O objetivo de dividir uma imagem em camadas é o reuso
+	- É possível compor imagens a partir de camadas de outras imagens
+	- Estrutura que executa determinadas ações em containers
+	- Instruções para rodar um container
+
+Imagens são modelos. Containers são processos criados com os critérios determinados pela imagem
+Docker Daemon === Docker Server === Docker Engine
+
+docker container ps -a
+docker ps - exibe containers em execução
+docker ps -a - exibe todos os containers, independente do estado
+docker container prune - remove todos os containers parados
+docker container run --rm imageName [command] - executa o comando dentro do container e logo depois remove o container
+docker run imageName - executa um container com a imagem desejada (sempre cria um novo container)
+docker container run imageName - cria um novo container com a imagem solicitada (roda e para se nenhum comando de iteração for utilizado)
+docker container run -it - roda o container no modo interativo e com acesso ao terminal
+docker container run --hep - exibe os comandos disponiveis
+docker container run --name containername - nomeia o container (os nomes devem ser unicos entre os container existentes)
+docker container start containername - inicializa um container existente e parado
+docker container run -p portadaminhamaquina:portadocontainer nomeimagem
+docker container run -d imagename (detached - a imagem pode ou não ter um comportamento que funcione com o -d ex.: nginx funciona, node n)
+docker container run -d --name containername -p 8080:80 -v $(pws)/html:/usr/share/nginx/html nginx
+docker container logs containername
+docker container logs -f -t containername
+docker container stop containername
+docker container logs containername
+docker container inspect containername
+docker container exec container name [command] - roda comandos dentro do container
+docker image ls
+docker volume ls
+docker image pull image:version
+docker image pull - baixa uma imagem do docker hub
+docker image ls - lista as imagens baixadas
+docker image rm - remove imagem
+docker image inspect - informações da imagem
+docker image tag
+docker image tag
+docker image build
+docker container build
+docker image  push - publica em um registry, seja local ou remoto
+docker-compose logs -f -t - exibe os logs de execução dos serviços
+
+//-- Dockerfile --//
+docker image build -t imagename .
+. -> estando na mesma pasta . é o caminho pra localizar o Dockerfile
+docker image build --build-arg arg=value
+docker container run -it --volumes-from=running-container-name debian cat /path/to/files
+
+//-- Redes --//
+Docker utiliza um padrão bridge - container, através da sua própria inteface de rede, acessa a rede da máquina host e assim consegue acesso a internet
+Tipos:
+	- None Network
+	- Bridge Network
+	- Host Network
+	- Overlay Network
+
+docker container run -d --net networkname imageName
+docker network create --driver bridge networkname
+docker network connect networkname containername
+docker container exec -it containername ifconfig
+docker container disconnect networkname containername
+
+//-- docker-compose --//
+Cada serviço é iniciado em um container
+
+Bind mount - armazenamento na máquina host de dados/arquivos
